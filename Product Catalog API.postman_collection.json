@@ -1,0 +1,930 @@
+{
+	"info": {
+		"_postman_id": "41801ffe-d199-4032-b7b9-222c2dc2814f",
+		"name": "Product Catalog API",
+		"description": "Collection for testing Product Catalog API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43925211",
+		"_collection_link": "https://joel-3748476.postman.co/workspace/Joel's-Workspace~0cfbdcae-f86e-428f-82da-1b70b14954ad/collection/43925211-41801ffe-d199-4032-b7b9-222c2dc2814f?action=share&source=collection_link&creator=43925211"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify response status is 200 OK",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Verify response is an array",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"});",
+									"",
+									"// Verify each product has required fields",
+									"pm.test(\"Each product has required fields\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    jsonData.forEach(function(product) {",
+									"        pm.expect(product).to.have.property('id');",
+									"        pm.expect(product).to.have.property('name');",
+									"        pm.expect(product).to.have.property('description');",
+									"        pm.expect(product).to.have.property('price');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products"
+							]
+						},
+						"description": "Retrieves all products in a simplified format"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Product response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify product data when found",
+									"        pm.test(\"Product found\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('id');",
+									"            pm.expect(jsonData).to.have.property('name');",
+									"            pm.expect(jsonData).to.have.property('description');",
+									"            pm.expect(jsonData).to.have.property('price');",
+									"            pm.expect(jsonData).to.have.property('categories');",
+									"            pm.expect(jsonData).to.have.property('reviews');",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when product not found",
+									"        pm.test(\"Product not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Product not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"1"
+							]
+						},
+						"description": "Retrieves a specific product by its ID with full details"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify product creation response",
+									"pm.test(\"Product created successfully\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.name).to.eql(\"Test Product\");",
+									"    pm.expect(jsonData.description).to.eql(\"Product for testing\");",
+									"    pm.expect(jsonData.price).to.eql(99.99);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Product\",\n    \"description\": \"Product for testing\",\n    \"price\": 99.99\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products"
+							]
+						},
+						"description": "Creates a new product"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Product update response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify product update success",
+									"        pm.test(\"Product updated successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData.name).to.eql(\"Updated Test Product\");",
+									"            pm.expect(jsonData.description).to.eql(\"Updated product description\");",
+									"            pm.expect(jsonData.price).to.eql(149.99);",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when product not found",
+									"        pm.test(\"Product not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Product not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Test Product\",\n    \"description\": \"Updated product description\",\n    \"price\": 149.99\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/products/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"7"
+							]
+						},
+						"description": "Updates an existing product"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Product deletion response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify product deletion success",
+									"        pm.test(\"Product deleted successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData).to.have.property('path');",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when product not found",
+									"        pm.test(\"Product not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Product not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"7"
+							]
+						},
+						"description": "Deletes a product"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Category to Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Category addition response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 201) {",
+									"        // Verify category addition success",
+									"        pm.test(\"Category added successfully\", function () {",
+									"            pm.response.to.have.status(201);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('categories');",
+									"            pm.expect(jsonData.categories).to.be.an('array');",
+									"            pm.expect(jsonData.categories.length).to.be.greaterThan(0);",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when product or category not found",
+									"        pm.test(\"Product or Category not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/1/categories/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"1",
+								"categories",
+								"1"
+							]
+						},
+						"description": "Adds a category to a product"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Category from Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Category removal response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify category removal success",
+									"        pm.test(\"Category removed successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData).to.have.property('path');",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when product or category not found",
+									"        pm.test(\"Product or Category not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/1/categories/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"1",
+								"categories",
+								"1"
+							]
+						},
+						"description": "Removes a category from a product"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Categories update response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify categories update success",
+									"        pm.test(\"Categories updated successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('categories');",
+									"            pm.expect(jsonData.categories).to.have.lengthOf(3);",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when product not found",
+									"        pm.test(\"Product not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Product not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[1, 2, 3]"
+						},
+						"url": {
+							"raw": "http://localhost:8080/products/1/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"1",
+								"categories"
+							]
+						},
+						"description": "Updates all categories for a product"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify response status is 200 OK",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Verify response is an array",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categories"
+							]
+						},
+						"description": "Retrieves all categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Category response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify category data when found",
+									"        pm.test(\"Category found\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('id');",
+									"            pm.expect(jsonData).to.have.property('name');",
+									"            pm.expect(jsonData).to.have.property('products');",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when category not found",
+									"        pm.test(\"Category not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Category not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/categories/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categories",
+								"1"
+							]
+						},
+						"description": "Retrieves a specific category by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify category creation response",
+									"pm.test(\"Category created successfully\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Category\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categories"
+							]
+						},
+						"description": "Creates a new category"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Category update response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify category update success",
+									"        pm.test(\"Category updated successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData.name).to.eql(\"Updated Test Category\");",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when category not found",
+									"        pm.test(\"Category not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Category not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Test Category\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/categories/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categories",
+								"10"
+							]
+						},
+						"description": "Updates an existing category"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Category deletion response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify category deletion success",
+									"        pm.test(\"Category deleted successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when category not found",
+									"        pm.test(\"Category not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Category not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/categories/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categories",
+								"10"
+							]
+						},
+						"description": "Deletes a category"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Get Product Reviews",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Product reviews response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify product reviews data when found",
+									"        pm.test(\"Product reviews found\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('id');",
+									"            pm.expect(jsonData).to.have.property('name');",
+									"            pm.expect(jsonData).to.have.property('averageRating');",
+									"            pm.expect(jsonData).to.have.property('totalReviews');",
+									"            pm.expect(jsonData).to.have.property('reviews');",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when product not found",
+									"        pm.test(\"Product not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Product not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/reviews/product/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"product",
+								"1"
+							]
+						},
+						"description": "Retrieves all reviews for a specific product"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify review creation response",
+									"pm.test(\"Review created successfully\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('review_Id');",
+									"    pm.expect(jsonData.comment).to.eql(\"Great product!\");",
+									"    pm.expect(jsonData.rating).to.eql(5);",
+									"    pm.expect(jsonData.productId).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"Great product!\",\n    \"rating\": 5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/reviews/product/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"product",
+								"1"
+							]
+						},
+						"description": "Creates a new review for a product"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Review update response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify review update success",
+									"        pm.test(\"Review updated successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData.comment).to.eql(\"Updated review comment\");",
+									"            pm.expect(jsonData.rating).to.eql(4);",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when review not found",
+									"        pm.test(\"Review not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Review not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"Updated review comment\",\n    \"rating\": 4\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/reviews/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"1"
+							]
+						},
+						"description": "Updates an existing review"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status and content",
+									"pm.test(\"Review deletion response\", function () {",
+									"    var status = pm.response.code;",
+									"    if (status === 200) {",
+									"        // Verify review deletion success",
+									"        pm.test(\"Review deleted successfully\", function () {",
+									"            pm.response.to.have.status(200);",
+									"        });",
+									"    } else if (status === 404) {",
+									"        // Verify error response when review not found",
+									"        pm.test(\"Review not found\", function () {",
+									"            pm.response.to.have.status(404);",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.have.property('message');",
+									"            pm.expect(jsonData.message).to.include('Review not found');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/reviews/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"1"
+							]
+						},
+						"description": "Deletes a review"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
