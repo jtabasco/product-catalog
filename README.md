@@ -142,6 +142,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👥 Authors
 - Joel Tabasco
 
+## 🎥 Video
+- [Product Catalog API Demo](https://youtu.be/Y1zHWyQoV18)
+
 ## 🙏 Acknowledgments
 - Promineo Tech
 
